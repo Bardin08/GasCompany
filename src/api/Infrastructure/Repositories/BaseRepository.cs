@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    public class BaseRepository<TEntity> where TEntity : class, IRepository<TEntity> 
+    public class BaseRepository<TEntity> where TEntity : class, IRepository<TEntity>
     {
         private readonly ApplicationDbContext _context;
         private readonly DbSet<TEntity> _set;
@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
         }
 
         public async Task Create(TEntity entity)
-        { 
+        {
             await _set.AddAsync(entity);
         }
 
