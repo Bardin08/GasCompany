@@ -1,16 +1,89 @@
 ﻿@page "/counter"
+@using IdentityModel.Client
+@using Newtonsoft.Json.Linq
 
 <h1>Counter</h1>
 
-<p>Current count: @currentCount</p>
+<p>Current count: @disco?.IsError</p>
+<p>Current count: @disco?.AuthorizeEndpoint</p>
+<p>Current count: @disco?.Issuer</p>
+<p>Current count: @disco?.UserInfoEndpoint</p>
+
+<p>Error @Error</p>
+<p>content @content</p>
+<p>status @StatusCode</p>
+<p>@tokenResponse?.IsError</p>
+<p>@tokenResponse?.Scope</p>
+<p>@tokenResponse?.AccessToken</p>
+
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 @code {
     private int currentCount = 0;
-
-    private void IncrementCount()
+    string StatusCode = "";
+    private async void IncrementCount()
     {
-        currentCount++;
+        var client = new HttpClient();
+        disco = await client.GetDiscoveryDocumentAsync("https://localhost:5001");
+        if (disco.IsError)
+        {
+            Console.WriteLine(disco.Error);
+        }
+
+        tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+        {
+            Address = disco.TokenEndpoint,
+
+            ClientId = "BlazorClient",
+            ClientSecret = "blazorsecret",
+            Scope = "GasApi"
+        });
+
+        if (tokenResponse.IsError)
+        {
+            Console.WriteLine(tokenResponse.Error);
+            return;
+        }
+
+        var apiClient = new HttpClient();
+        apiClient.SetBearerToken(tokenResponse.AccessToken);
+        try
+        {
+            var response = await apiClient.GetAsync("https://localhost:6001/api/WeatherForecast/identity");
+            StatusCode = response.StatusCode.ToString();
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(response.StatusCode);
+            }
+            else
+            {
+                content = await response.Content.ReadAsStringAsync();
+            }
+
+            Error = string.Empty;
+
+        }
+        catch (Exception e)
+        {
+            Error = e.Message
+                    + e.InnerException?.Message
+                    + e.StackTrace;
+        }
+
+        StateHasChanged();
     }
+
+    DiscoveryDocumentResponse disco;
+    TokenResponse tokenResponse;
+    string Error;
+    string content;
+
+    
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+
 }

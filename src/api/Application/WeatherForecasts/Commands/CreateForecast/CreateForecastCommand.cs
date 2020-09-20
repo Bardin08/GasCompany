@@ -14,30 +14,30 @@ namespace Application.WeatherForecasts.Commands.CreateForecast
         public string Summary { get; set; }
         public string PublishedBy { get; set; }
     }
-    public class CreateForecastCommandHandler : IRequestHandler<CreateForecastCommand>
-    {
-        private readonly IRepository<WeatherForecast> _repository;
+    //public class CreateForecastCommandHandler : IRequestHandler<CreateForecastCommand>
+    //{
+    //    private readonly IRepository<WeatherForecast> _repository;
 
-        public CreateForecastCommandHandler(IRepository<WeatherForecast> repository)
-        {
-            _repository = repository;
-        }
+    //    public CreateForecastCommandHandler(IRepository<WeatherForecast> repository)
+    //    {
+    //        _repository = repository;
+    //    }
 
-        public async Task<Unit> Handle(CreateForecastCommand request, CancellationToken cancellationToken)
-        {
-            var entity = new WeatherForecast
-            {
-                Date = request.Date,
-                TemperatureC = request.TemperatureC,
-                Summary = request.Summary,
-                PublishedBy = request.PublishedBy
-            };
+    //    public async Task<Unit> Handle(CreateForecastCommand request, CancellationToken cancellationToken)
+    //    {
+    //        var entity = new WeatherForecast
+    //        {
+    //            Date = request.Date,
+    //            TemperatureC = request.TemperatureC,
+    //            Summary = request.Summary,
+    //            PublishedBy = request.PublishedBy
+    //        };
 
-            await _repository.Create(entity);
+    //        await _repository.Create(entity);
 
-            await _repository.SaveChangesAsync();
+    //        await _repository.SaveChangesAsync();
 
-            return Unit.Value;
-        }
-    }
+    //        return Unit.Value;
+    //    }
+    //}
 }
