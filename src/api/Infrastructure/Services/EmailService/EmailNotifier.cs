@@ -15,7 +15,12 @@ namespace Infrastructure.Services.EmailService
         /// </summary>
         /// <param name="email"><seealso cref="Email"/> letter model</param>
         /// <returns>SendGrid <seealso cref="Response"/></returns>
-        public Task SendEmailAsync(Email email)
+        public async Task SendEmailAsync(Email email)
+        {
+            await Execute(email);
+        }
+
+        private Task Execute(Email email)
         {
             var client = new SendGridClient(email.Sender.ApiKey);
             var letter = new SendGridMessage
